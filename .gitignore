@@ -9,6 +9,7 @@ Thumbs.db
 # Credentials: never commit these
 *.json
 !package.json
+!dashboard/data.json
 .env
 *.pem
 *.key
