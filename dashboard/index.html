@@ -122,6 +122,7 @@
 const BLUE = '#1a73e8', TEAL = '#12b5cb', AMBER = '#f9ab00', RED = '#d93025', GREY = '#5f6368';
 const usd = n => '$' + Math.round(n).toLocaleString('en-US');
 const num = n => Math.round(n).toLocaleString('en-US');
+const esc = t => String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 const pct = n => (n === null || n === undefined) ? '-' : Number(n).toFixed(2) + '%';
 Chart.defaults.font.family = 'Roboto, "Segoe UI", Helvetica, Arial, sans-serif';
 Chart.defaults.color = GREY;
@@ -165,12 +166,12 @@ fetch('data.json').then(r => r.json()).then(d => {
   const worst = Math.max(...d.funnel.map(x => x.dropoff_pct || 0));
   document.getElementById('funnelTable').innerHTML =
     '<tr><th>Step</th><th>Sessions</th><th>% of previous</th><th>Drop-off</th><th>% of first</th></tr>' +
-    d.funnel.map(x => `<tr><td>${x.step_name}</td><td>${num(x.sessions)}</td><td>${pct(x.pct_of_previous_step)}</td>` +
+    d.funnel.map(x => `<tr><td>${esc(x.step_name)}</td><td>${num(x.sessions)}</td><td>${pct(x.pct_of_previous_step)}</td>` +
       `<td class="${x.dropoff_pct === worst ? 'bad' : ''}">${pct(x.dropoff_pct)}</td><td>${pct(x.pct_of_first_step)}</td></tr>`).join('');
 
   document.getElementById('srcTable').innerHTML =
     '<tr><th>Source / medium</th><th>Users</th><th>Purchasers</th><th>Revenue</th><th>User conversion</th></tr>' +
-    d.src.map(x => `<tr><td>${x.source_medium}</td><td>${num(x.users)}</td><td>${num(x.purchasers)}</td>` +
+    d.src.map(x => `<tr><td>${esc(x.source_medium)}</td><td>${num(x.users)}</td><td>${num(x.purchasers)}</td>` +
       `<td>${usd(x.revenue_usd)}</td><td>${pct(x.user_conversion_rate_pct)}</td></tr>`).join('');
 
   // Products
@@ -181,7 +182,7 @@ fetch('data.json').then(r => r.json()).then(d => {
     options: { indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { display: false } } } });
   document.getElementById('prodTable').innerHTML =
     '<tr><th>Product</th><th>Category</th><th>Units</th><th>Qty rank</th><th>Revenue</th><th>% of revenue</th></tr>' +
-    d.prod.map(x => `<tr><td>${x.revenue_rank}. ${x.item_name}</td><td>${x.item_category}</td><td>${num(x.units_sold)}</td>` +
+    d.prod.map(x => `<tr><td>${x.revenue_rank}. ${esc(x.item_name)}</td><td>${esc(x.item_category)}</td><td>${num(x.units_sold)}</td>` +
       `<td>${x.qty_rank}</td><td>${usd(x.revenue_usd)}</td><td>${pct(x.pct_of_total_revenue)}</td></tr>`).join('');
 
   // Audience
