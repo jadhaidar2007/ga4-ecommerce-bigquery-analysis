@@ -2,7 +2,7 @@
 
 > End-to-end analysis of 92 days of Google Merchandise Store GA4 event data: SQL in BigQuery, a four-page Looker Studio dashboard, and business recommendations.
 
-**Live dashboard:** [PASTE LOOKER STUDIO LINK HERE]
+**Live dashboard:** https://jadhaidar2007.github.io/ga4-ecommerce-bigquery-analysis/dashboard/
 
 ![Dashboard overview](screenshots/01_overview.png)
 
@@ -27,7 +27,7 @@ Known limits of the sample (stated up front so results are read correctly):
 
 ## Tools
 
-BigQuery (sandbox, no billing) · BigQuery Standard SQL · Looker Studio · Git/GitHub
+BigQuery (sandbox, no billing) · BigQuery Standard SQL · Chart.js (dashboard) · Git/GitHub
 
 ## Method
 
@@ -58,11 +58,13 @@ Numbers below come straight from the BigQuery tables built by `sql/07_dashboard_
 - **Audience:** returning-user sessions produced $240,497 vs $121,668 for new-user sessions, about 3.7 purchases per 100 sessions vs 0.8 for new. Device rates are similar: mobile 1.64, desktop 1.54 and tablet 1.39 purchases per 100 sessions.
 - **Geography:** the United States led with $160,573 (44% of revenue), then India ($34,986) and Canada ($32,799).
 
-**Data-quality notes:** the 5,692 purchase events include 4,452 distinct transaction IDs and 906 events with no usable transaction ID, so "purchases" here counts events and may slightly overstate orders. "Sessions" are summed per day, so a session crossing midnight is counted on both days.
+**Data-quality notes:** revenue drops to almost nothing from 26 Jan 2021 although purchase events continue, so the end of the revenue trend looks incomplete in the source. Also, the 5,692 purchase events include 4,452 distinct transaction IDs and 906 events with no usable transaction ID, so "purchases" here counts events and may slightly overstate orders. "Sessions" are summed per day, so a session crossing midnight is counted on both days.
 
 ## Dashboard
 
-Four pages: **Overview**, **Funnel & Acquisition**, **Products**, **Audience**. Build guide: [`docs/02_looker_studio_build.md`](docs/02_looker_studio_build.md).
+A one-page dashboard with four sections (Overview, Funnel & acquisition, Products, Audience), built with Chart.js on top of the BigQuery output. The data comes from the `ga4_portfolio.dash_*` tables and is saved in [`dashboard/data.json`](dashboard/data.json); the page is [`dashboard/index.html`](dashboard/index.html).
+
+I first tried Looker Studio, but Google returned an authorization error (`invalid_scope`) on the Data Studio API for my account, so I built the page by hand instead. If you prefer Looker Studio, the layout is described in [`docs/02_looker_studio_build.md`](docs/02_looker_studio_build.md).
 
 ## Screenshots
 
@@ -80,13 +82,13 @@ Four pages: **Overview**, **Funnel & Acquisition**, **Products**, **Audience**. 
 - GA4 event data model: sessions, events, parameters, ecommerce items
 - Cost-aware querying in the BigQuery sandbox
 - Funnel and cohort-style analysis, KPI definition
-- Dashboard design in Looker Studio and turning data into recommendations
+- Dashboard design (HTML, CSS, Chart.js) and turning data into recommendations
 
 ## Reproduce it
 
 1. Enable the BigQuery sandbox: [`docs/01_bigquery_setup.md`](docs/01_bigquery_setup.md)
 2. Run `sql/07_dashboard_summary.sql` in the BigQuery editor (creates dataset `ga4_portfolio`).
-3. Follow [`docs/02_looker_studio_build.md`](docs/02_looker_studio_build.md).
+3. Export the tables to `dashboard/data.json` (or point a Looker Studio report at them using [`docs/02_looker_studio_build.md`](docs/02_looker_studio_build.md)).
 
 Sandbox tables expire after 60 days; re-run step 2 to refresh them.
 

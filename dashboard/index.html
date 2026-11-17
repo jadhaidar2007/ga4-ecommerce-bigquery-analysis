@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GA4 Ecommerce Performance | Nov 2020 - Jan 2021</title>
+<style>
+  :root {
+    --blue: #1a73e8; --teal: #12b5cb; --amber: #f9ab00; --red: #d93025;
+    --text: #202124; --grey: #5f6368; --line: #dadce0; --bg: #f8f9fa;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font-family: Roboto, "Segoe UI", Helvetica, Arial, sans-serif; line-height: 1.45; }
+  header { background: var(--blue); color: #fff; padding: 18px 32px; }
+  header h1 { margin: 0; font-size: 22px; font-weight: 600; }
+  header p { margin: 4px 0 0; font-size: 13px; opacity: .85; }
+  nav { background: #fff; border-bottom: 1px solid var(--line); padding: 0 32px; position: sticky; top: 0; z-index: 5; }
+  nav a { display: inline-block; padding: 12px 14px; font-size: 14px; color: var(--grey); text-decoration: none; }
+  nav a:hover { color: var(--blue); }
+  main { max-width: 1180px; margin: 0 auto; padding: 24px 24px 48px; }
+  h2 { font-size: 18px; margin: 36px 0 12px; }
+  .kpis { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px; }
+  .kpi .label { font-size: 12px; color: var(--grey); text-transform: uppercase; letter-spacing: .04em; }
+  .kpi .value { font-size: 26px; font-weight: 600; margin-top: 4px; }
+  .kpi .note { font-size: 11px; color: var(--grey); margin-top: 2px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .card h3 { margin: 0 0 2px; font-size: 14px; }
+  .card .sub { margin: 0 0 10px; font-size: 12px; color: var(--grey); }
+  .chart { position: relative; height: 280px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: right; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+  th:first-child, td:first-child { text-align: left; }
+  th { font-weight: 600; color: var(--grey); font-size: 12px; }
+  .bad { color: var(--red); font-weight: 600; }
+  .notes { font-size: 12px; color: var(--grey); margin-top: 32px; }
+  footer { text-align: center; font-size: 12px; color: var(--grey); padding: 24px; }
+  @media (max-width: 860px) { .kpis { grid-template-columns: repeat(2, 1fr); } .grid2 { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>GA4 Ecommerce Performance</h1>
+  <p>Google Merchandise Store sample data, 1 Nov 2020 to 31 Jan 2021 (BigQuery public dataset)</p>
+</header>
+<nav>
+  <a href="#overview">Overview</a>
+  <a href="#funnel">Funnel &amp; acquisition</a>
+  <a href="#products">Products</a>
+  <a href="#audience">Audience</a>
+</nav>
+<main>
+  <section id="overview">
+    <h2>Overview</h2>
+    <div class="kpis" id="kpis"></div>
+    <div class="card" style="margin-top:16px">
+      <h3>Daily revenue and sessions</h3>
+      <p class="sub">Revenue in USD (left axis), sessions (right axis)</p>
+      <div class="chart" style="height:320px"><canvas id="trend"></canvas></div>
+    </div>
+    <div class="grid2" style="margin-top:16px">
+      <div class="card"><h3>Daily purchases</h3><p class="sub">Count of purchase events</p>
+        <div class="chart"><canvas id="purchases"></canvas></div></div>
+      <div class="card"><h3>Revenue by month</h3><p class="sub">USD</p>
+        <div class="chart"><canvas id="monthly"></canvas></div></div>
+    </div>
+  </section>
+
+  <section id="funnel">
+    <h2>Funnel and acquisition</h2>
+    <div class="grid2">
+      <div class="card"><h3>Ecommerce funnel (sessions)</h3>
+        <p class="sub">A session counts at a step only if it also reached every earlier step</p>
+        <div class="chart"><canvas id="funnelChart"></canvas></div></div>
+      <div class="card"><h3>Step-to-step drop-off</h3><p class="sub">Share of sessions lost between steps</p>
+        <table id="funnelTable"></table></div>
+    </div>
+    <div class="card" style="margin-top:16px"><h3>Source / medium performance (top 10 by revenue)</h3>
+      <p class="sub">Source is the user's first-touch acquisition source in this dataset</p>
+      <table id="srcTable"></table></div>
+  </section>
+
+  <section id="products">
+    <h2>Products</h2>
+    <div class="grid2">
+      <div class="card"><h3>Top 10 products by revenue</h3><p class="sub">USD</p>
+        <div class="chart" style="height:360px"><canvas id="prodRev"></canvas></div></div>
+      <div class="card"><h3>Units sold (same products)</h3><p class="sub">Quantity</p>
+        <div class="chart" style="height:360px"><canvas id="prodQty"></canvas></div></div>
+    </div>
+    <div class="card" style="margin-top:16px"><h3>Product detail</h3><table id="prodTable"></table></div>
+  </section>
+
+  <section id="audience">
+    <h2>Audience</h2>
+    <div class="grid2">
+      <div class="card"><h3>Revenue by country (top 10)</h3><p class="sub">USD</p>
+        <div class="chart" style="height:340px"><canvas id="country"></canvas></div></div>
+      <div class="card"><h3>Sessions by device</h3><p class="sub">Share of sessions</p>
+        <div class="chart" style="height:340px"><canvas id="device"></canvas></div></div>
+    </div>
+    <div class="grid2" style="margin-top:16px">
+      <div class="card"><h3>Sessions: new vs returning</h3><p class="sub">By month</p>
+        <div class="chart"><canvas id="nvr"></canvas></div></div>
+      <div class="card"><h3>New vs returning KPIs</h3><p class="sub">Whole period</p>
+        <table id="nvrTable"></table></div>
+    </div>
+  </section>
+
+  <p class="notes">
+    Notes: "Purchases" counts purchase events; 906 of the 5,692 events have no usable transaction ID, so orders may be slightly
+    lower. Revenue falls to almost nothing from 26 Jan 2021 even though purchase events keep coming in, so the last days of the
+    revenue series look incomplete in the source data. Daily sessions are summed per day, so a session crossing midnight counts on both days. Numbers come from the
+    tables built by <code>sql/07_dashboard_summary.sql</code>.
+  </p>
+</main>
+<footer>Built by Jad Haidar with BigQuery SQL and Chart.js. Source on GitHub: jadhaidar2007/ga4-ecommerce-bigquery-analysis</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+const BLUE = '#1a73e8', TEAL = '#12b5cb', AMBER = '#f9ab00', RED = '#d93025', GREY = '#5f6368';
+const usd = n => '$' + Math.round(n).toLocaleString('en-US');
+const num = n => Math.round(n).toLocaleString('en-US');
+const pct = n => (n === null || n === undefined) ? '-' : Number(n).toFixed(2) + '%';
+Chart.defaults.font.family = 'Roboto, "Segoe UI", Helvetica, Arial, sans-serif';
+Chart.defaults.color = GREY;
+
+fetch('data.json').then(r => r.json()).then(d => {
+  // KPI cards
+  const sessions = d.daily.reduce((a, x) => a + x.sessions, 0);
+  const purchases = d.daily.reduce((a, x) => a + x.purchases, 0);
+  const revenue = d.daily.reduce((a, x) => a + x.r, 0);
+  const kpis = [
+    ['Users', num(d.total_users), 'distinct users in the period'],
+    ['Sessions', num(sessions), 'summed per day'],
+    ['Purchases', num(purchases), 'purchase events'],
+    ['Revenue', usd(revenue), 'USD'],
+    ['Purchases per session', (purchases / sessions * 100).toFixed(2) + '%', 'purchases / sessions'],
+  ];
+  document.getElementById('kpis').innerHTML = kpis.map(k =>
+    `<div class="card kpi"><div class="label">${k[0]}</div><div class="value">${k[1]}</div><div class="note">${k[2]}</div></div>`).join('');
+
+  const labels = d.daily.map(x => x.d);
+  new Chart('trend', { type: 'line', data: { labels, datasets: [
+    { label: 'Revenue (USD)', data: d.daily.map(x => x.r), borderColor: BLUE, backgroundColor: BLUE, yAxisID: 'y', pointRadius: 0, borderWidth: 2 },
+    { label: 'Sessions', data: d.daily.map(x => x.sessions), borderColor: TEAL, backgroundColor: TEAL, yAxisID: 'y1', pointRadius: 0, borderWidth: 2 }
+  ]}, options: { maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+    scales: { y: { position: 'left' }, y1: { position: 'right', grid: { drawOnChartArea: false } }, x: { ticks: { maxTicksLimit: 8 } } } } });
+
+  new Chart('purchases', { type: 'line', data: { labels, datasets: [
+    { label: 'Purchases', data: d.daily.map(x => x.purchases), borderColor: AMBER, backgroundColor: AMBER, pointRadius: 0, borderWidth: 2 }
+  ]}, options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { maxTicksLimit: 6 } } } } });
+
+  const months = {};
+  d.daily.forEach(x => { const m = x.d.slice(0, 7); months[m] = (months[m] || 0) + x.r; });
+  new Chart('monthly', { type: 'bar', data: { labels: Object.keys(months), datasets: [
+    { label: 'Revenue', data: Object.values(months), backgroundColor: BLUE }
+  ]}, options: { maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+
+  // Funnel
+  new Chart('funnelChart', { type: 'bar', data: { labels: d.funnel.map(x => x.step_name), datasets: [
+    { label: 'Sessions', data: d.funnel.map(x => x.sessions), backgroundColor: BLUE }
+  ]}, options: { indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+  const worst = Math.max(...d.funnel.map(x => x.dropoff_pct || 0));
+  document.getElementById('funnelTable').innerHTML =
+    '<tr><th>Step</th><th>Sessions</th><th>% of previous</th><th>Drop-off</th><th>% of first</th></tr>' +
+    d.funnel.map(x => `<tr><td>${x.step_name}</td><td>${num(x.sessions)}</td><td>${pct(x.pct_of_previous_step)}</td>` +
+      `<td class="${x.dropoff_pct === worst ? 'bad' : ''}">${pct(x.dropoff_pct)}</td><td>${pct(x.pct_of_first_step)}</td></tr>`).join('');
+
+  document.getElementById('srcTable').innerHTML =
+    '<tr><th>Source / medium</th><th>Users</th><th>Purchasers</th><th>Revenue</th><th>User conversion</th></tr>' +
+    d.src.map(x => `<tr><td>${x.source_medium}</td><td>${num(x.users)}</td><td>${num(x.purchasers)}</td>` +
+      `<td>${usd(x.revenue_usd)}</td><td>${pct(x.user_conversion_rate_pct)}</td></tr>`).join('');
+
+  // Products
+  const pn = d.prod.map(x => x.item_name);
+  new Chart('prodRev', { type: 'bar', data: { labels: pn, datasets: [{ data: d.prod.map(x => x.revenue_usd), backgroundColor: BLUE }] },
+    options: { indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+  new Chart('prodQty', { type: 'bar', data: { labels: pn, datasets: [{ data: d.prod.map(x => x.units_sold), backgroundColor: TEAL }] },
+    options: { indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+  document.getElementById('prodTable').innerHTML =
+    '<tr><th>Product</th><th>Category</th><th>Units</th><th>Qty rank</th><th>Revenue</th><th>% of revenue</th></tr>' +
+    d.prod.map(x => `<tr><td>${x.revenue_rank}. ${x.item_name}</td><td>${x.item_category}</td><td>${num(x.units_sold)}</td>` +
+      `<td>${x.qty_rank}</td><td>${usd(x.revenue_usd)}</td><td>${pct(x.pct_of_total_revenue)}</td></tr>`).join('');
+
+  // Audience
+  new Chart('country', { type: 'bar', data: { labels: d.ctry.map(x => x.country), datasets: [{ data: d.ctry.map(x => x.revenue_usd), backgroundColor: BLUE }] },
+    options: { indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+  new Chart('device', { type: 'doughnut', data: { labels: d.dev.map(x => x.device_category), datasets: [{ data: d.dev.map(x => x.sessions), backgroundColor: [BLUE, TEAL, AMBER] }] },
+    options: { maintainAspectRatio: false } });
+  const mths = [...new Set(d.nvr.map(x => x.m))];
+  const series = t => mths.map(m => (d.nvr.find(x => x.m === m && x.user_type === t) || {}).sessions || 0);
+  new Chart('nvr', { type: 'bar', data: { labels: mths, datasets: [
+    { label: 'New', data: series('New'), backgroundColor: TEAL }, { label: 'Returning', data: series('Returning'), backgroundColor: BLUE }
+  ]}, options: { maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true } } } });
+  const agg = {};
+  d.nvr.forEach(x => { const a = agg[x.user_type] = agg[x.user_type] || { s: 0, p: 0, r: 0 }; a.s += x.sessions; a.p += x.purchases; a.r += x.revenue_usd; });
+  document.getElementById('nvrTable').innerHTML =
+    '<tr><th>User type</th><th>Sessions</th><th>Purchases</th><th>Revenue</th><th>Purchases / 100 sessions</th></tr>' +
+    Object.entries(agg).map(([t, a]) => `<tr><td>${t}</td><td>${num(a.s)}</td><td>${num(a.p)}</td><td>${usd(a.r)}</td><td>${(a.p / a.s * 100).toFixed(2)}</td></tr>`).join('');
+});
+</script>
+</body>
+</html>
