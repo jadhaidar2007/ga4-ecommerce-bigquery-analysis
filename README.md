@@ -49,14 +49,16 @@ BigQuery (sandbox, no billing) · BigQuery Standard SQL · Looker Studio · Git/
 
 ## Key findings
 
-> Replace every bracket with your own numbers from the dashboard. Do not publish a finding you did not verify.
+Numbers below come straight from the BigQuery tables built by `sql/07_dashboard_summary.sql` (1 Nov 2020 to 31 Jan 2021).
 
-- **Overall:** [X] users generated [X] sessions, [X] purchases and $[X] revenue between 1 Nov 2020 and 31 Jan 2021 (session conversion rate [X%]).
-- **Funnel:** [X%] of product-view sessions reached add-to-cart; the largest drop-off was between [STEP A] and [STEP B] ([X%] lost).
-- **Acquisition:** [SOURCE / MEDIUM] brought the most revenue ($[X]); [SOURCE / MEDIUM] converted best at [X%] user conversion.
-- **Products:** the top 10 products made up [X%] of revenue; [PRODUCT NAME] ranked #1 with $[X].
-- **Audience:** returning users converted at [X%] vs [X%] for new users; [DEVICE] converted at [X%] vs [X%] for [DEVICE].
-- **Geography:** [COUNTRY] led revenue with $[X] ([X%] of total).
+- **Overall:** 270,154 users, about 361K daily-summed sessions, 5,692 purchase events and $362,165 revenue. Purchase sessions are roughly 1.3% of sessions.
+- **Funnel (sessions):** 77,020 viewed an item, 15,173 added to cart (19.7%), 5,959 began checkout (39.3% of carts) and 2,848 purchased (47.8% of checkouts). The biggest leak is view_item → add_to_cart, where 80.3% drop off. Only 3.7% of item-view sessions complete the full funnel.
+- **Acquisition:** google / organic brought the most revenue ($95,775 from 103,487 users, 1.19% user conversion), followed by (direct) / (none) at $79,650 (1.39%). Among the top four by revenue, shop.googlemerchandisestore.com / referral converted best at 2.18% (the "(data deleted)" bucket shows 3.79% but is an obfuscation artifact).
+- **Products:** the top 10 products make up only 10.9% of revenue, so revenue is spread out. Google Canteen Bottle Black led with $5,303 (268 units), just ahead of Google Utility BackPack at $5,256 (53 units).
+- **Audience:** returning-user sessions produced $240,497 vs $121,668 for new-user sessions, about 3.7 purchases per 100 sessions vs 0.8 for new. Device rates are similar: mobile 1.64, desktop 1.54 and tablet 1.39 purchases per 100 sessions.
+- **Geography:** the United States led with $160,573 (44% of revenue), then India ($34,986) and Canada ($32,799).
+
+**Data-quality notes:** the 5,692 purchase events include 4,452 distinct transaction IDs and 906 events with no usable transaction ID, so "purchases" here counts events and may slightly overstate orders. "Sessions" are summed per day, so a session crossing midnight is counted on both days.
 
 ## Dashboard
 
