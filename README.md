@@ -4,7 +4,7 @@
 
 **Live dashboard:** https://jadhaidar2007.github.io/ga4-ecommerce-bigquery-analysis/dashboard/
 
-![Dashboard overview](screenshots/01_overview.png)
+![Dashboard overview](screenshots/01_overview.jpg)
 
 ## Business problem
 
@@ -60,6 +60,16 @@ Numbers below come straight from the BigQuery tables built by `sql/07_dashboard_
 
 **Data-quality notes:** revenue drops to almost nothing from 26 Jan 2021 although purchase events continue, so the end of the revenue trend looks incomplete in the source. Also, the 5,692 purchase events include 4,452 distinct transaction IDs and 906 events with no usable transaction ID, so "purchases" here counts events and may slightly overstate orders. "Sessions" are summed per day, so a session crossing midnight is counted on both days.
 
+## Recommendations
+
+1. **Fix the biggest leak first.** 80% of sessions that view a product never add it to the cart. Test clearer prices, shipping and returns info, and size/colour selection on product pages, and track the view_item → add_to_cart rate.
+2. **Recover abandoned carts.** Only 39% of carts reach checkout and 48% of checkouts finish. A saved-cart reminder and fewer checkout fields are the cheapest things to try first.
+3. **Invest in returning users.** Returning sessions are about a quarter of traffic but produced roughly two thirds of revenue ($240K of $362K) and convert at about 3.7 purchases per 100 sessions vs 0.8 for new users. Email and remarketing should help more than extra top-of-funnel spend.
+4. **Review paid search.** google / cpc brought 15,527 users but only $9,056 in revenue (0.98% conversion), below organic and direct. Check keyword and landing-page quality before adding budget.
+5. **Treat mobile as a full channel.** Mobile is 40% of sessions and converts about as well as desktop (1.64 vs 1.54 purchases per 100 sessions), so it deserves equal testing effort.
+
+Caveats: this is one store over three months, source is first-touch, and revenue is incomplete in the last days of January.
+
 ## Dashboard
 
 A one-page dashboard with four sections (Overview, Funnel & acquisition, Products, Audience), built with Chart.js on top of the BigQuery output. The data comes from the `ga4_portfolio.dash_*` tables and is saved in [`dashboard/data.json`](dashboard/data.json); the page is [`dashboard/index.html`](dashboard/index.html).
@@ -70,11 +80,11 @@ I first tried Looker Studio, but Google returned an authorization error (`invali
 
 | Overview | Funnel & Acquisition |
 |---|---|
-| ![Overview](screenshots/01_overview.png) | ![Funnel](screenshots/02_funnel_acquisition.png) |
+| ![Overview](screenshots/01_overview.jpg) | ![Funnel](screenshots/02_funnel_acquisition.jpg) |
 
 | Products | Audience |
 |---|---|
-| ![Products](screenshots/03_products.png) | ![Audience](screenshots/04_audience.png) |
+| ![Products](screenshots/03_products.jpg) | ![Audience](screenshots/04_audience.jpg) |
 
 ## Skills demonstrated
 
