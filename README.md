@@ -1,6 +1,6 @@
-# GA4 Ecommerce Analytics: BigQuery + Looker Studio
+# GA4 Ecommerce Analytics: BigQuery SQL + Dashboard
 
-> End-to-end analysis of 92 days of Google Merchandise Store GA4 event data: SQL in BigQuery, a four-page Looker Studio dashboard, and business recommendations.
+> End-to-end analysis of 92 days of Google Merchandise Store GA4 event data: SQL in BigQuery, a hosted dashboard, and business recommendations.
 
 **Live dashboard:** https://jadhaidar2007.github.io/ga4-ecommerce-bigquery-analysis/dashboard/
 
@@ -34,7 +34,7 @@ BigQuery (sandbox, no billing) · BigQuery Standard SQL · Chart.js (dashboard) 
 1. Queried the public dataset with date-sharded wildcard tables and a `_TABLE_SUFFIX` filter to keep every query inside sandbox limits.
 2. Flattened nested data with `UNNEST` (event parameters for `ga_session_id` / `ga_session_number`, and `items` for product revenue).
 3. Defined a session as `user_pseudo_id` + `ga_session_id`, and built a session-based funnel where a session counts at a step only if it reached all earlier steps.
-4. Materialised six small summary tables (`sql/07_dashboard_summary.sql`) so Looker Studio reads kilobytes instead of rescanning raw events.
+4. Materialised six small summary tables (`sql/07_dashboard_summary.sql`) so the dashboard reads kilobytes instead of rescanning raw events.
 5. Built the dashboard on those tables and wrote recommendations from the results.
 
 | File | What it answers |
