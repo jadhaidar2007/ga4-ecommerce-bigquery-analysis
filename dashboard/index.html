@@ -109,8 +109,8 @@
   </section>
 
   <p class="notes">
-    Notes: "Purchases" counts purchase events; 906 of the 5,692 events have no usable transaction ID, so orders may be slightly
-    lower. Revenue falls to almost nothing from 26 Jan 2021 even though purchase events keep coming in, so the last days of the
+    Notes: "Purchases" counts purchase events: of the 5,692, 4,451 are first occurrences of a unique transaction ID, 335 are repeats and
+    906 have no usable ID, so orders are likely lower. Revenue falls to almost nothing from 26 Jan 2021 even though purchase events keep coming in, so the last days of the
     revenue series look incomplete in the source data. Daily sessions are summed per day, so a session crossing midnight counts on both days. Numbers come from the
     tables built by <code>sql/07_dashboard_summary.sql</code>.
   </p>
@@ -137,7 +137,7 @@ fetch('data.json').then(r => r.json()).then(d => {
     ['Sessions', num(sessions), 'summed per day'],
     ['Purchases', num(purchases), 'purchase events'],
     ['Revenue', usd(revenue), 'USD'],
-    ['Purchases per session', (purchases / sessions * 100).toFixed(2) + '%', 'purchases / sessions'],
+    ['Purchases per session', (purchases / sessions * 100).toFixed(2) + '%', 'purchase events / sessions'],
   ];
   document.getElementById('kpis').innerHTML = kpis.map(k =>
     `<div class="card kpi"><div class="label">${k[0]}</div><div class="value">${k[1]}</div><div class="note">${k[2]}</div></div>`).join('');
